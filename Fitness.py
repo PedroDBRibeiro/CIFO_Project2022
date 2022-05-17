@@ -1,43 +1,41 @@
 
-class Fitness(object):
+class Fitness():
 
-    fitness_score = 0;
-
-    def calculate_fitness(self) :
-
-        self.row_evaluation()
-        self.column_evaluation()
-        self.block_evaluation()
+    def __init__(self):
+        self.fitness_score = 0;
 
 
-    def row_evaluation(self):
-        min_current_index = 0;
-        max_current_index = 8;
+    def calculate_fitness(self, sudoku) :
 
-        while max_current_index<= len(object):
-            row = set(object[min_current_index:max_current_index])
-            if(len(row)==9):
-                self.fitness_score =+1
+        self.row_evaluation(sudoku)
+        self.column_evaluation(sudoku)
+        self.block_evaluation(sudoku)
+        return self.fitness_score
 
-            min_current_index =+ 9
-            max_current_index =+ 9
 
-    def column_evaluation(self):
+    def row_evaluation(self, sudoku):
+        min_current_index = 0
+        max_current_index = 9
+
+        while max_current_index<= len(sudoku):
+            row = set(sudoku[min_current_index:max_current_index])
+            self.fitness_score += 9-len(row)
+
+            min_current_index += 9
+            max_current_index += 9
+
+    def column_evaluation(self, sudoku):
         columns = [0,9,18,27,36,45,54,63,72]
 
         for i in range(9):
-            column = set([object[index] for index in columns])
-            if (len(column) == 9):
-                self.fitness_score = +1
-
+            column = set([sudoku[index] for index in columns])
+            self.fitness_score += 9-len(column)
             columns = [x + 1 for x in columns]
 
-    def block_evaluation(self):
+    def block_evaluation(self, sudoku):
         blocks = [0,1,2,9,10,11,54,63,72]
 
         for i in range(9):
-            block = set([object[index] for index in blocks])
-            if (len(block) == 9):
-                self.fitness_score = +1
-
+            block = set([sudoku[index] for index in blocks])
+            self.fitness_score += 9-len(block)
             blocks = [x + 1 for x in blocks]
