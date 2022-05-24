@@ -1,51 +1,60 @@
 from random import shuffle, choice, sample, random, randint
-import numpy as np
+from sudoku_data.SudokuProblems import sudoku1
+import numpy
+from sudoku_data.sudokuHelper import *
 from copy import deepcopy
 from operator import attrgetter
+
+
+def calculate_fitness(sudoku):
+    row_idx, col_idx, box_idx = get_indices(base=3)
+
+    repres = sudoku
+    n_error = 0
+    # count errors in rows
+    for row in row_idx:
+        n_error += count_duplicates([repres[r] for r in row])
+    # count errors in cols
+    for col in col_idx:
+        n_error += count_duplicates([repres[c] for c in col])
+    # count errors in box
+    for box in box_idx:
+        n_error += count_duplicates([repres[b] for b in box])
+
+    # penalize deviation from initial puzzle
+    if True:
+        for pos, v in enumerate(sudoku):
+            if repres[pos] != v and v != 0:
+                n_error += 12
+
+    # penalize sudokus that still have zeros
+    # if True:
+    # for pos, v in enumerate(sudoku):
+    #  if v == 0:
+    #   n_error += 5
+
+    return n_error
+
+
+def fill(sudoku):
+    sudoku = sudoku
+    for count, value in enumerate(sudoku):
+        if value == 0:
+            sudoku[count] = numpy.random.randint(1, 10)
+
+    return sudoku
+
+
+board_length = 9
 
 
 class Individual:
     def __init__(
             self,
-            sudoku,
+            sudoku
     ):
-
-        self.sudoku = sudoku
-        self.fitness_score = 0
-        self.fitness = self.calculate_fitness(self.sudoku)
-
-    def calculate_fitness(self, sudoku):
-        self.row_evaluation(sudoku)
-        self.column_evaluation(sudoku)
-        self.block_evaluation(sudoku)
-        return self.fitness_score
-
-    def row_evaluation(self, sudoku):
-        min_current_index = 0
-        max_current_index = 9
-
-        while max_current_index <= len(sudoku):
-            row = set(sudoku[min_current_index:max_current_index])
-            self.fitness_score += 9 - len(row)
-
-            min_current_index += 9
-            max_current_index += 9
-
-    def column_evaluation(self, sudoku):
-        columns = [0, 9, 18, 27, 36, 45, 54, 63, 72]
-
-        for i in range(9):
-            column = set([sudoku[index] for index in columns])
-            self.fitness_score += 9 - len(column)
-            columns = [x + 1 for x in columns]
-
-    def block_evaluation(self, sudoku):
-        blocks = [0, 1, 2, 9, 10, 11, 54, 63, 72]
-
-        for i in range(9):
-            block = set([sudoku[index] for index in blocks])
-            self.fitness_score += 9 - len(block)
-            blocks = [x + 1 for x in blocks]
+        self.sudoku = fill(sudoku)
+        self.fitness = calculate_fitness(self.sudoku)
 
     def index(self, value):
         return self.sudoku.index(value)
@@ -126,4 +135,4 @@ class Population:
         return self.individuals[position]
 
     def __repr__(self):
-        return f"Population(size={len(self.individuals)}, individual_size={len(self.individuals[0])})"
+        return  # f"Population(size={len(self.individuals)}, individual_size={len(self.individuals[0])})"

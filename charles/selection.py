@@ -31,7 +31,7 @@ def fps(population):
         raise Exception("No optimization specified (min or max).")
 
 
-def tournament(population, size=15):
+def tournament(population, size=10):
     """Tournament selection implementation.
 
     Args:
@@ -52,3 +52,26 @@ def tournament(population, size=15):
     else:
         raise Exception("No optimization specified (min or max).")
 
+
+def rank(population):
+    """
+    Implementation of Rank selection.
+    """
+    # Rank individuals based on optim approach
+    if population.optim == "max":
+        population.individuals.sort(key=attrgetter("fitness"))
+    elif population.optim == "min":
+        population.individuals.sort(key=attrgetter("fitness"), reverse=True)
+    else:
+        raise Exception("No optimization specified (min or max).")
+
+    # Sum all ranks
+    total = sum(range(population.size + 1))
+    # Get random position
+    spin = uniform(0, total)
+    position = 0
+    # Iterate until spin is found
+    for count, individual in enumerate(population):
+        position += count + 1
+        if position > spin:
+            return individual
