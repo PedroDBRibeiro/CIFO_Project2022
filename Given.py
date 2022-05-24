@@ -1,30 +1,30 @@
 from Individual import Individual
 
-board_size = 9  # Number of digits (in the case of standard Sudoku puzzles, this is 9).
+board_size = 9  #
 
 class Given(Individual):
-    """ The grid containing the given/known values. """
+    # Grid containing the values of a sudoku
 
     def __init__(self, values):
         self.values = values
         return
 
-    def is_row_duplicate(self, row, value):
-        """ Check whether there is a duplicate of a fixed/given value in a row. """
+    def duplicates_in_row(self, row, value):
+        # Check if row has duplicates
         for column in range(0, board_size):
             if(self.values[row][column] == value):
                return True
         return False
 
-    def is_column_duplicate(self, column, value):
-        """ Check whether there is a duplicate of a fixed/given value in a column. """
+    def duplicates_in_column(self, column, value):
+        # Check if column has duplicates
         for row in range(0, board_size):
             if(self.values[row][column] == value):
                return True
         return False
 
-    def is_block_duplicate(self, row, column, value):
-        """ Check whether there is a duplicate of a fixed/given value in a 3 x 3 block. """
+    def duplicates_in_block(self, row, column, value):
+        # Check if 3 x 3 block has duplicates
         i = 3*(int(row/3))
         j = 3*(int(column/3))
 

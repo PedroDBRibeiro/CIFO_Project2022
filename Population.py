@@ -11,22 +11,23 @@ class Population(object):
     """ A set of candidate solutions to the Sudoku puzzle. These candidates are also known as the chromosomes in the population. """
 
     def __init__(self):
-        self.candidates = []
+        self.individuals = []
         return
 
-    def seed(self, Nc, given):
-        self.candidates = []
+    def seed(self, population_size, given):
+        self.individuals = []
 
         # Determine the legal values that each square can take.
         helper = Individual()
+        # create an empty board
         helper.values = [[[] for j in range(0, board_length)] for i in range(0, board_length)]
+        #iterate the board to discover which values are possible to fill and which ones are known
         for row in range(0, board_length):
             for column in range(0, board_length):
                 for value in range(1, 10):
                     if ((given.values[row][column] == 0) and not (
-                            given.is_column_duplicate(column, value) or given.is_block_duplicate(row, column,
-                                                                                                 value) or given.is_row_duplicate(
-                            row, value))):
+                            given.duplicates_in_column(column, value) or given.duplicates_in_block(row, column,
+                                                                                                   value) or given.duplicates_in_row(row, value))):
                         # Value is available.
                         helper.values[row][column].append(value)
                     elif (given.values[row][column] != 0):
@@ -35,7 +36,7 @@ class Population(object):
                         break
 
         # Seed a new population.
-        for p in range(0, Nc):
+        for p in range(0, population_size):
             g = Individual()
             for i in range(0, board_length):  # New row in candidate.
                 row = numpy.zeros(board_length)
@@ -58,7 +59,7 @@ class Population(object):
 
                 g.values[i] = row
 
-            self.candidates.append(g)
+            self.individuals.append(g)
 
         # Compute the fitness of all candidates in the population.
         self.update_fitness()
@@ -68,13 +69,12 @@ class Population(object):
         return
 
     def update_fitness(self):
-        """ Update fitness of every candidate/chromosome. """
-        for candidate in self.candidates:
-            candidate.update_fitness()
+        for individual in self.individuals:
+            individual.update_fitness()
         return
 
     def sort(self):
-        self.candidates.sort(key=lambda b: b.fitness)
+        self.individuals.sort(key=lambda b: b.fitness)
         return
 
 

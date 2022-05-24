@@ -6,7 +6,7 @@ class Selection(object):
     def __init__(self):
         return
 
-    def compete(self, individuals , selection_rate):
+    def tournment(self, individuals , selection_rate):
         # Select 2 random individuals and make them compete
         c1 = individuals[random.randint(0, len(individuals)-1)]
         c2 = individuals[random.randint(0, len(individuals)-1)]

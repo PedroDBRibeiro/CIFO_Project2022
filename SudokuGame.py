@@ -49,11 +49,11 @@ class SudokuGame(object):
             # Check for a solution.
             best_fitness = 0.0
             for c in range(0, population_size):
-                fitness = self.population.candidates[c].fitness
+                fitness = self.population.individuals[c].fitness
                 if (fitness == 1):
                     print("Solution found at generation %d!" % generation)
-                    print(self.population.candidates[c].values)
-                    return self.population.candidates[c]
+                    print(self.population.individuals[c].values)
+                    return self.population.individuals[c]
 
                 # Find the best fitness.
                 if (fitness > best_fitness):
@@ -69,15 +69,15 @@ class SudokuGame(object):
             best_individuals = []
             for e in range(0, number_best_individuals):
                 elite = Individual()
-                elite.values = numpy.copy(self.population.candidates[e].values)
+                elite.values = numpy.copy(self.population.individuals[e].values)
                 best_individuals.append(elite)
 
             # Create the rest of the candidates.
             for count in range(number_best_individuals, population_size, 2):
                 # Select parents from population via a tournament.
                 t = Selection()
-                parent1 = t.compete(self.population.candidates , 0.85)
-                parent2 = t.compete(self.population.candidates, 0.85)
+                parent1 = t.tournment(self.population.individuals, 0.85)
+                parent2 = t.tournment(self.population.individuals, 0.85)
 
                 ## Cross-over.
                 c = Crossover()
@@ -110,7 +110,7 @@ class SudokuGame(object):
                 next_population.append(best_individuals[e])
 
             # Select next generation.
-            self.population.candidates = next_population
+            self.population.individuals = next_population
             self.population.update_fitness()
 
             # Calculate new adaptive mutation rate (based on Rechenberg's 1/5 success rule). This is to stop too much mutation as the fitness progresses towards unity.
@@ -130,7 +130,7 @@ class SudokuGame(object):
 
             # Check for stale population.
             self.population.sort()
-            if (self.population.candidates[0].fitness != self.population.candidates[1].fitness):
+            if (self.population.individuals[0].fitness != self.population.individuals[1].fitness):
                 stale = 0
             else:
                 stale += 1

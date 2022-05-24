@@ -85,10 +85,10 @@ class Individual(object):
                 # Check if the two places are free...
                 if(given.values[row1][from_column] == 0 and given.values[row1][to_column] == 0):
                     # ...and that we are not causing a duplicate in the rows' columns.
-                    if(not given.is_column_duplicate(to_column, self.values[row1][from_column])
-                       and not given.is_column_duplicate(from_column, self.values[row2][to_column])
-                       and not given.is_block_duplicate(row2, to_column, self.values[row1][from_column])
-                       and not given.is_block_duplicate(row1, from_column, self.values[row2][to_column])):
+                    if(not given.duplicates_in_column(to_column, self.values[row1][from_column])
+                       and not given.duplicates_in_column(from_column, self.values[row2][to_column])
+                       and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
+                       and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column])):
 
                         # Swap values.
                         temp = self.values[row2][to_column]
