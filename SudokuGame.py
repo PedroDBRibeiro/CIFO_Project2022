@@ -33,8 +33,7 @@ class SudokuGame(object):
 
         # Mutation parameters.
         phi = 0
-        sigma = 1
-        mutation_rate = 0.09
+        mutation_rate = 0.01
 
         # Create an initial population.
         self.population = Population()
@@ -73,7 +72,7 @@ class SudokuGame(object):
                 best_individuals.append(elite)
 
             # Create the rest of the candidates.
-            for count in range(number_best_individuals, population_size, 2):
+            for _ in range(number_best_individuals, population_size, 2):
                 # Select parents from population via a tournament.
                 t = Selection()
                 parent1 = t.tournment(self.population.individuals, 0.85)
@@ -113,20 +112,7 @@ class SudokuGame(object):
             self.population.individuals = next_population
             self.population.update_fitness()
 
-            # Calculate new adaptive mutation rate (based on Rechenberg's 1/5 success rule). This is to stop too much mutation as the fitness progresses towards unity.
-            if (mutations == 0):
-                phi = 0  # Avoid divide by zero.
-            else:
-                phi = phi / mutations
 
-            if (phi > 0.2):
-                sigma = sigma / 0.998
-            elif (phi < 0.2):
-                sigma = sigma * 0.998
-
-            mutation_rate = abs(numpy.random.normal(loc=0.0, scale=sigma, size=None))
-            mutations = 0
-            phi = 0
 
             # Check for stale population.
             self.population.sort()
@@ -140,7 +126,6 @@ class SudokuGame(object):
                 print("The population has gone stale. Re-seeding...")
                 self.population.seed(population_size, self.given)
                 stale = 0
-                sigma = 1
                 phi = 0
                 mutations = 0
                 mutation_rate = 0.06
