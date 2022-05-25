@@ -96,4 +96,3 @@ class Individual(object):
                         self.values[row1][from_column] = temp
                         success = True
 
-        return success
