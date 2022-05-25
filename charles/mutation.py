@@ -1,6 +1,5 @@
 from random import randint, sample
 
-
 def swap_mutation(individual):
     """Swap mutation for a GA individual
 

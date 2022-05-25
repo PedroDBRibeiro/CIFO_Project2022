@@ -17,7 +17,7 @@ pop.evolve(
     gens=300,
     select=tournament,
     crossover=single_point_co,
-    mutate=inversion_mutation,
+    mutate=swap_mutation,
     co_p=0.8,
     mu_p=0.2,
     elitism=True
