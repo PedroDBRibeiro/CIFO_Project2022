@@ -1,27 +1,23 @@
-from charles.crossover import pmx_co, single_point_co, cycle_co, arithmetic_co
-from charles.mutation import inversion_mutation, swap_mutation
-from charles.selection import tournament
+from time import time
+from SudokuGame import SudokuGame
 from sudoku_data.SudokuProblems import sudoku1
-from charles.charles import *
+import Parameters
+import numpy as np
 
 if __name__ == '__main__':
-    print(sudoku1)
 
-pop = Population(
-    size=800,
-    optim="min",
-    sudoku=sudoku1
-)
+    start = time()
+    s = SudokuGame(Parameters.population_size, Parameters.generations, Parameters.mutation_rate)
+    s.load(sudoku1)
+    solution = s.play()
+    if (solution):
+        s.print_solution(solution)
+    else:
+        print("NO SOLUTION WAS FOUND")
 
-pop.evolve(
-    gens=300,
-    select=tournament,
-    crossover=single_point_co,
-    mutate=swap_mutation,
-    co_p=0.8,
-    mu_p=0.2,
-    elitism=True
-)
-
+    end = time()
+    duration = np.round(end - start, 2)
+    
+    print(duration)
 
 
