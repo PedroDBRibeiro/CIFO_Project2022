@@ -36,8 +36,8 @@ if __name__ == '__main__':
         stored_time = pd.concat((stored_time, timedf))
         stored_results = pd.concat((stored_results, resultsdf))
 
-    stored_time.to_excel("time_analysis.xlsx", index=False)
-    stored_results.to_excel("results.xlsx", index=False)
+    stored_time.to_excel(Parameters.timePath, index=False)
+    stored_results.to_excel(Parameters.resultsPath, index=False)
 
 '''
     time_path = open("time_analysis.xlsx", "r")

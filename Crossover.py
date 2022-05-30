@@ -2,6 +2,7 @@
 import numpy
 import random
 
+import Parameters
 from Individual import Individual
 
 random.seed()
@@ -12,7 +13,7 @@ class Crossover(object):
     def __init__(self):
         return
 
-    def crossover(self, parent1, parent2, crossover_rate):
+    def crossover(self, parent1, parent2):
         """ Create two new child candidates by crossing over parent genes. """
         child1 = Individual()
         child2 = Individual()
@@ -26,15 +27,15 @@ class Crossover(object):
             r = random.uniform(0, 1.1)
 
         # Perform crossover.
-        if (r < crossover_rate):
+        if r < Parameters.crossover_rate:
             # Pick a crossover point. Crossover must have at least 1 row (and at most Nd-1) rows.
             crossover_point1 = random.randint(0, 8)
             crossover_point2 = random.randint(1, 9)
-            while(crossover_point1 == crossover_point2):
+            while crossover_point1 == crossover_point2:
                 crossover_point1 = random.randint(0, 8)
                 crossover_point2 = random.randint(1, 9)
 
-            if(crossover_point1 > crossover_point2):
+            if crossover_point1 > crossover_point2:
                 temp = crossover_point1
                 crossover_point1 = crossover_point2
                 crossover_point2 = temp
@@ -99,3 +100,6 @@ class Crossover(object):
             if(parent_row[i] == value):
                 return i
 
+
+
+def MP_crossover(self, parent1, parent2):

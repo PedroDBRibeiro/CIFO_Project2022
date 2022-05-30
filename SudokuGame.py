@@ -99,14 +99,18 @@ class SudokuGame(object):
                 # Cross-over.
                 c = Crossover()
                 child1, child2 = c.crossover(
-                    parent1, parent2, crossover_rate=1.0)
+                    parent1, parent2)
 
-                child1.mutate(self.mutation_rate, self.given)
+                if Parameters.selection_mutation == 'swap':
+                    child1.mutate(self.mutation_rate, self.given)
+                    child2.mutate(self.mutation_rate, self.given)
+
+                if Parameters.selection_mutation == 'random_value':
+                    child1.mutate_random_value(self.mutation_rate, self.given)
+                    child2.mutate_random_value(self.mutation_rate, self.given)
+
                 child1.update_fitness()
-
-                child2.mutate(self.mutation_rate, self.given)
                 child2.update_fitness()
-
                 # Add children to new population.
                 next_population.append(child1)
                 next_population.append(child2)
@@ -116,7 +120,6 @@ class SudokuGame(object):
                 # mutation.
                 for e in range(0, self.number_best_individuals):
                     next_population.append(best_individuals[e])
-
 
             best_fitness_history.append([Parameters.sudokuName, generation, best_fitness])
 
@@ -131,18 +134,19 @@ class SudokuGame(object):
             else:
                 stale += 1
 
-            if(stale%5 == 0):
-                self.mutation_rate += 0.025
+            if (stale % 5 == 0):
+                self.mutation_rate += 0.05
 
-            # Re-seed the population if 100 generations have passed with the fittest two candidates always having the same fitness.
-            if (stale >= 80):
-                return None, best_fitness_history
-
-
-                    #print("The population has gone stale. Re-seeding...")
-                #self.population.seed(self.population_size, self.given)
-                #stale = 0
-                #self.mutation_rate = Parameters.mutation_rate
+            # Re-seed the population if 40 generations have passed with the fittest two candidates always having the same fitness.
+            if (stale >= 40):
+                if Parameters.reseeding:
+                    if Parameters.verbose:
+                        print("The population has gone stale. Re-seeding...")
+                    self.population.seed(self.population_size, self.given)
+                    stale = 0
+                    self.mutation_rate = Parameters.mutation_rate
+                else:
+                    return None, best_fitness_history
 
         if Parameters.verbose:
             print("No solution found.")
