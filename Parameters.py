@@ -19,7 +19,8 @@ mutation_rate = 0.15
 # Selection Parameters
 is_maximization = True
 selection_algorithm = 'tournament'  # tournament or proportional
-selection_mutation = 'random_value' #random_value or swap
+selection_mutation = 'scramble' #swap or inversion or scramble
+number_of_mutations = 1
 tournament_size = 10
 selection_rate = 0.90
 crossover_rate = 0.90

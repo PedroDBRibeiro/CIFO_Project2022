@@ -6,11 +6,8 @@ from Crossover import Crossover
 from Given import Given
 from Population import Population
 from Selection import pick_selection_algorithm
-from Maximization import better
 import Parameters
-from operator import attrgetter
-import pandas as pd
-from time import time
+
 
 
 class SudokuGame(object):
@@ -102,12 +99,18 @@ class SudokuGame(object):
                     parent1, parent2)
 
                 if Parameters.selection_mutation == 'swap':
-                    child1.mutate(self.mutation_rate, self.given)
-                    child2.mutate(self.mutation_rate, self.given)
+                    child1.mutate(self.mutation_rate, self.given , Parameters.number_of_mutations)
+                    child2.mutate(self.mutation_rate, self.given, Parameters.number_of_mutations)
 
-                if Parameters.selection_mutation == 'random_value':
-                    child1.mutate_random_value(self.mutation_rate, self.given)
-                    child2.mutate_random_value(self.mutation_rate, self.given)
+                if Parameters.selection_mutation == 'scramble':
+                    child1.mutate_scramble(self.mutation_rate, self.given )
+                    child2.mutate_scramble(self.mutation_rate, self.given)
+
+                if Parameters.selection_mutation == 'inversion':
+                    child1.mutate_inversion(self.mutation_rate, self.given)
+                    child2.mutate_inversion(self.mutation_rate, self.given)
+
+
 
                 child1.update_fitness()
                 child2.update_fitness()

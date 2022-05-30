@@ -1,5 +1,6 @@
 import numpy
 import random
+import itertools
 
 board_length = 9
 
@@ -62,16 +63,17 @@ class Individual(object):
         self.fitness = fitness
         return
 
-    def mutate(self, mutation_rate, given):
+    def mutate(self, mutation_rate, given , number_of_mutations = 1):
         """ Mutate a candidate by picking a row, and then picking two values within that row to swap. """
 
         r = random.uniform(0, 1.1)
         while (r > 1):  # Outside [0, 1] boundary - choose another
             r = random.uniform(0, 1.1)
 
-        success = False
+        done_mutations = 0
+        #success = False
         if (r < mutation_rate):  # Mutate.
-            while (not success):
+            while ( number_of_mutations > done_mutations ): #not success
                 row1 = random.randint(0, 8)
                 row2 = row1
 
@@ -84,29 +86,50 @@ class Individual(object):
                 # Check if the two places are free...
                 if (given.values[row1][from_column] == 0 and given.values[row1][to_column] == 0):
                     # ...and that we are not causing a duplicate in the rows' columns.
-                    if (not given.duplicates_in_column(to_column, self.values[row1][from_column])
+                    if ( number_of_mutations >1 or (not given.duplicates_in_column(to_column, self.values[row1][from_column])
                             and not given.duplicates_in_column(from_column, self.values[row2][to_column])
                             and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
-                            and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column])):
+                            and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column]))):
                         # Swap values.
                         temp = self.values[row2][to_column]
                         self.values[row2][to_column] = self.values[row1][from_column]
                         self.values[row1][from_column] = temp
-                        success = True
+                        done_mutations += 1
+                        #success = True
 
-    def mutate_random_value(self, mutation_rate, given):
-        # Mutate by switching a value randomly.
+
+    def mutate_inversion(self, mutation_rate, given ):
 
         r = random.uniform(0, 1.1)
-        while r > 1:  # Outside [0, 1] boundary - choose another
+        while (r > 1):  # Outside [0, 1] boundary - choose another
             r = random.uniform(0, 1.1)
 
-        row = random.randint(0, 8)
-        column = random.randint(0, 8)
-        if r < mutation_rate:
-            if (given.values[row][column] == 0):
-                if (not given.duplicates_in_column(to_column, self.values[row1][from_column])
-                        and not given.duplicates_in_column(from_column, self.values[row2][to_column])
-                        and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
-                        and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column])):
-                self.values[row][column] = random.randint(1, 9)
+        if (r < mutation_rate):  # Mutate.
+            print(" INVERSION HAPPENING ")
+            row1 = random.randint(0, 8)
+            temp = self.values[row1][::-1]
+            self.values[row1] = temp
+
+    def mutate_scramble(self, mutation_rate, given ):
+
+        r = random.uniform(0, 1.1)
+        while (r > 1):  # Outside [0, 1] boundary - choose another
+            r = random.uniform(0, 1.1)
+
+        if (r < mutation_rate):  # Mutate.
+            row1 = random.randint(0, 8)
+            startMutation = 0
+            finishMutation = 0
+            while( startMutation >= finishMutation):
+                startMutation = random.randint(0, 8)
+                finishMutation = random.randint(0, 8)
+
+
+            initial = self.values[row1][:startMutation]
+            to_shuffle = numpy.copy(self.values[row1][startMutation:finishMutation])
+            random.shuffle(to_shuffle)
+            final = self.values[row1][finishMutation:]
+            join = list(itertools.chain(initial, to_shuffle, final))
+            self.values[row1] =  join
+
+
