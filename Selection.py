@@ -70,10 +70,17 @@ class ProportionalSelection(ISelection):
                     if current > pick:
                         return individual
 
+        while True:
+            current = 0
+            pick = random.uniform(0, max)
+            for individual in individuals:
+                current = current + individual.fitness
+                if current > pick:
+                    return individual
 
 
 def pick_selection_algorithm(algorithm):
-    return{
+    return {
         'tournament': TournamentSelection(),
         'proportional': ProportionalSelection()
     }.get(algorithm, 'tournament')

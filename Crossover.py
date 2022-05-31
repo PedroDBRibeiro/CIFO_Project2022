@@ -2,6 +2,7 @@
 import numpy
 import random
 
+import Parameters
 from Individual import Individual
 
 random.seed()
@@ -30,7 +31,7 @@ class Crossover(object):
             r = random.uniform(0, 1.1)
 
         # Perform crossover.
-        if (r < crossover_rate):
+        if r < Parameters.crossover_rate:
             # Pick a crossover point. Crossover must have at least 1 row (and at most Nd-1) rows.
             for i in range(number_of_cutoff_points):
                 cutoff_points.append(random.randint(0, 8))

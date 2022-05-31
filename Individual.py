@@ -1,7 +1,8 @@
-
 import numpy
 import random
-board_length = 9  
+import itertools
+
+board_length = 9
 
 
 class Individual(object):
@@ -23,35 +24,34 @@ class Individual(object):
 
         for i in range(0, board_length):  # For each row...
             for j in range(0, board_length):  # For each number within it...
-                row_count[self.values[i][j]-1] += 1  # ...Update list with occurrence of a particular number.
+                row_count[self.values[i][j] - 1] += 1  # ...Update list with occurrence of a particular number.
 
-            row_sum += (1.0/len(set(row_count)))/board_length
+            row_sum += (1.0 / len(set(row_count))) / board_length
             row_count = numpy.zeros(board_length)
 
         for i in range(0, board_length):  # For each column...
             for j in range(0, board_length):  # For each number within it...
-                column_count[self.values[j][i]-1] += 1  # ...Update list with occurrence of a particular number.
+                column_count[self.values[j][i] - 1] += 1  # ...Update list with occurrence of a particular number.
 
-            column_sum += (1.0 / len(set(column_count)))/board_length
+            column_sum += (1.0 / len(set(column_count))) / board_length
             column_count = numpy.zeros(board_length)
-
 
         # For each block...
         for i in range(0, board_length, 3):
             for j in range(0, board_length, 3):
-                block_count[self.values[i][j]-1] += 1
-                block_count[self.values[i][j+1]-1] += 1
-                block_count[self.values[i][j+2]-1] += 1
+                block_count[self.values[i][j] - 1] += 1
+                block_count[self.values[i][j + 1] - 1] += 1
+                block_count[self.values[i][j + 2] - 1] += 1
 
-                block_count[self.values[i+1][j]-1] += 1
-                block_count[self.values[i+1][j+1]-1] += 1
-                block_count[self.values[i+1][j+2]-1] += 1
+                block_count[self.values[i + 1][j] - 1] += 1
+                block_count[self.values[i + 1][j + 1] - 1] += 1
+                block_count[self.values[i + 1][j + 2] - 1] += 1
 
-                block_count[self.values[i+2][j]-1] += 1
-                block_count[self.values[i+2][j+1]-1] += 1
-                block_count[self.values[i+2][j+2]-1] += 1
+                block_count[self.values[i + 2][j] - 1] += 1
+                block_count[self.values[i + 2][j + 1] - 1] += 1
+                block_count[self.values[i + 2][j + 2] - 1] += 1
 
-                block_sum += (1.0/len(set(block_count)))/board_length
+                block_sum += (1.0 / len(set(block_count))) / board_length
                 block_count = numpy.zeros(board_length)
 
         # Calculate overall fitness.
@@ -63,36 +63,84 @@ class Individual(object):
         self.fitness = fitness
         return
 
-    def mutate(self, mutation_rate, given):
+    def mutate(self, mutation_rate, given , number_of_mutations = 1):
         """ Mutate a candidate by picking a row, and then picking two values within that row to swap. """
 
         r = random.uniform(0, 1.1)
-        while(r > 1): # Outside [0, 1] boundary - choose another
+        while (r > 1):  # Outside [0, 1] boundary - choose another
             r = random.uniform(0, 1.1)
 
-        success = False
+        done_mutations = 0
+        #success = False
         if (r < mutation_rate):  # Mutate.
-            while(not success):
+            while ( number_of_mutations > done_mutations ): #not success
                 row1 = random.randint(0, 8)
                 row2 = row1
 
                 from_column = random.randint(0, 8)
                 to_column = random.randint(0, 8)
-                while(from_column == to_column):
+                while (from_column == to_column):
                     from_column = random.randint(0, 8)
                     to_column = random.randint(0, 8)
 
                 # Check if the two places are free...
-                if(given.values[row1][from_column] == 0 and given.values[row1][to_column] == 0):
+                if (given.values[row1][from_column] == 0 and given.values[row1][to_column] == 0):
                     # ...and that we are not causing a duplicate in the rows' columns.
-                    if(not given.duplicates_in_column(to_column, self.values[row1][from_column])
-                       and not given.duplicates_in_column(from_column, self.values[row2][to_column])
-                       and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
-                       and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column])):
-
+                    if (  (not given.duplicates_in_column(to_column, self.values[row1][from_column])
+                            and not given.duplicates_in_column(from_column, self.values[row2][to_column])
+                            and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
+                            and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column]))):
                         # Swap values.
                         temp = self.values[row2][to_column]
                         self.values[row2][to_column] = self.values[row1][from_column]
                         self.values[row1][from_column] = temp
-                        success = True
+                        done_mutations += 1
+                        #success = True
+
+
+    def mutate_inversion(self, mutation_rate, given ):
+
+        r = random.uniform(0, 1.1)
+        while (r > 1):  # Outside [0, 1] boundary - choose another
+            r = random.uniform(0, 1.1)
+
+        if (r < mutation_rate):  # Mutate.
+            row1 = random.randint(0, 8)
+
+            startMutation = 0
+            finishMutation = 0
+            while (startMutation >= finishMutation):
+                startMutation = random.randint(0, 8)
+                finishMutation = random.randint(0, 8)
+
+            initial = self.values[row1][:startMutation]
+            to_invert = numpy.copy(self.values[row1][startMutation:finishMutation])
+            to_invert = to_invert[::-1]
+            final = self.values[row1][finishMutation:]
+            join = list(itertools.chain(initial, to_invert, final))
+            self.values[row1] = join
+
+
+    def mutate_scramble(self, mutation_rate, given ):
+
+        r = random.uniform(0, 1.1)
+        while (r > 1):  # Outside [0, 1] boundary - choose another
+            r = random.uniform(0, 1.1)
+
+        if (r < mutation_rate):  # Mutate.
+            row1 = random.randint(0, 8)
+            startMutation = 0
+            finishMutation = 0
+            while( startMutation >= finishMutation):
+                startMutation = random.randint(0, 8)
+                finishMutation = random.randint(0, 8)
+
+
+            initial = self.values[row1][:startMutation]
+            to_shuffle = numpy.copy(self.values[row1][startMutation:finishMutation])
+            random.shuffle(to_shuffle)
+            final = self.values[row1][finishMutation:]
+            join = list(itertools.chain(initial, to_shuffle, final))
+            self.values[row1] =  join
+
 
