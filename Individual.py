@@ -86,7 +86,7 @@ class Individual(object):
                 # Check if the two places are free...
                 if (given.values[row1][from_column] == 0 and given.values[row1][to_column] == 0):
                     # ...and that we are not causing a duplicate in the rows' columns.
-                    if ( number_of_mutations >1 or (not given.duplicates_in_column(to_column, self.values[row1][from_column])
+                    if (  (not given.duplicates_in_column(to_column, self.values[row1][from_column])
                             and not given.duplicates_in_column(from_column, self.values[row2][to_column])
                             and not given.duplicates_in_block(row2, to_column, self.values[row1][from_column])
                             and not given.duplicates_in_block(row1, from_column, self.values[row2][to_column]))):
@@ -105,10 +105,21 @@ class Individual(object):
             r = random.uniform(0, 1.1)
 
         if (r < mutation_rate):  # Mutate.
-            print(" INVERSION HAPPENING ")
             row1 = random.randint(0, 8)
-            temp = self.values[row1][::-1]
-            self.values[row1] = temp
+
+            startMutation = 0
+            finishMutation = 0
+            while (startMutation >= finishMutation):
+                startMutation = random.randint(0, 8)
+                finishMutation = random.randint(0, 8)
+
+            initial = self.values[row1][:startMutation]
+            to_invert = numpy.copy(self.values[row1][startMutation:finishMutation])
+            to_invert = to_invert[::-1]
+            final = self.values[row1][finishMutation:]
+            join = list(itertools.chain(initial, to_invert, final))
+            self.values[row1] = join
+
 
     def mutate_scramble(self, mutation_rate, given ):
 
