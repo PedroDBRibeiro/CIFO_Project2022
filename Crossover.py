@@ -6,14 +6,18 @@ from Individual import Individual
 
 random.seed()
 
-board_size = 9  # Number of digits (in the case of standard Sudoku puzzles, this is 9).
+# Number of digits (in the case of standard Sudoku puzzles, this is 9).
+board_size = 9
+
 
 class Crossover(object):
     def __init__(self):
         return
 
-    def crossover(self, parent1, parent2, crossover_rate):
+    def crossover(self, parent1, parent2, crossover_rate, number_of_cutoff_points=2):
         """ Create two new child candidates by crossing over parent genes. """
+        cutoff_points = []
+
         child1 = Individual()
         child2 = Individual()
 
@@ -28,19 +32,17 @@ class Crossover(object):
         # Perform crossover.
         if (r < crossover_rate):
             # Pick a crossover point. Crossover must have at least 1 row (and at most Nd-1) rows.
-            crossover_point1 = random.randint(0, 8)
-            crossover_point2 = random.randint(1, 9)
-            while(crossover_point1 == crossover_point2):
-                crossover_point1 = random.randint(0, 8)
-                crossover_point2 = random.randint(1, 9)
+            for i in range(number_of_cutoff_points):
+                cutoff_points.append(random.randint(0, 8))
 
-            if(crossover_point1 > crossover_point2):
-                temp = crossover_point1
-                crossover_point1 = crossover_point2
-                crossover_point2 = temp
+            # retry if  crossover poits are equal
+            while(len(set(cutoff_points)) != len(cutoff_points)):
+                for i in range(number_of_cutoff_points):
+                    cutoff_points[i] = random.randint(0, 8)
 
-            for i in range(crossover_point1, crossover_point2):
-                child1.values[i], child2.values[i] = self.crossover_rows(child1.values[i], child2.values[i])
+            for i in cutoff_points:
+                child1.values[i], child2.values[i] = self.crossover_rows(
+                    child1.values[i], child2.values[i])
 
         return child1, child2
 
@@ -51,7 +53,8 @@ class Crossover(object):
         remaining = list(range(1, board_size+1))
         cycle = 0
 
-        while((0 in child_row1) and (0 in child_row2)):  # While child rows not complete...
+        # While child rows not complete...
+        while((0 in child_row1) and (0 in child_row2)):
             if(cycle % 2 == 0):  # Even cycles.
                 # Assign next unused value.
                 index = self.find_unused(row1, remaining)
@@ -98,4 +101,3 @@ class Crossover(object):
         for i in range(0, len(parent_row)):
             if(parent_row[i] == value):
                 return i
-

@@ -6,7 +6,7 @@ from Crossover import Crossover
 from Given import Given
 from Population import Population
 from Selection import pick_selection_algorithm
-from Maximization import better
+from Util import better
 import Parameters
 
 
@@ -22,7 +22,8 @@ class SudokuGame(object):
         return
 
     def load(self, board):
-        self.given = Given(numpy.reshape(board, (Parameters.board_length, Parameters.board_length)))
+        self.given = Given(numpy.reshape(
+            board, (Parameters.board_length, Parameters.board_length)))
         return
 
     def print_solution(self,  solution):
@@ -70,15 +71,18 @@ class SudokuGame(object):
             # Create the rest of the candidates.
             for _ in range(self.number_best_individuals, self.population_size, 2):
                 # Select parents from population via the picked selection algorithm.
-                selection_algorithm = pick_selection_algorithm(Parameters.selection_algorithm)
-                
-                parent1 = selection_algorithm.select(self.population.individuals)
-                parent2 = selection_algorithm.select(self.population.individuals)
+                selection_algorithm = pick_selection_algorithm(
+                    Parameters.selection_algorithm)
+
+                parent1 = selection_algorithm.select(
+                    self.population.individuals)
+                parent2 = selection_algorithm.select(
+                    self.population.individuals)
 
                 # Cross-over.
                 c = Crossover()
                 child1, child2 = c.crossover(
-                    parent1, parent2, crossover_rate=1.0)
+                    parent1, parent2, crossover_rate=1.0, number_of_cutoff_points=2)
 
                 child1.mutate(self.mutation_rate, self.given)
                 child1.update_fitness()

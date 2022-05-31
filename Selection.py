@@ -1,10 +1,8 @@
 import random
 from abc import ABC, abstractmethod
 from enum import Enum
-from Maximization import better
+from Util import better
 import Parameters
-
-
 
 
 class ISelection(ABC):
@@ -20,12 +18,12 @@ class TournamentSelection(ISelection):
         return
 
     def select(self, individuals):
-        i = 0 
+        i = 0
         c1 = individuals[random.randint(0, len(individuals)-1)]
         best = c1
-        while i < Parameters.tournament_size:  
+        while i < Parameters.tournament_size:
             # Select 2 random individuals and make them compete
-        
+
             c2 = individuals[random.randint(0, len(individuals)-1)]
 
             # Find the strongest and the weakest.
@@ -37,29 +35,40 @@ class TournamentSelection(ISelection):
                 weakest = c1
 
             i = i + 1
-        
+
             rand = random.uniform(0, 1)
             if(rand < Parameters.selection_rate):
-                best =  strongest
+                best = strongest
             else:
                 best = weakest
-        
+
         return best
+
 
 class ProportionalSelection(ISelection):
     def __init__(self):
         return
 
     def select(self, individuals):
-      max = sum([i.fitness for i in individuals])
+        if Parameters.is_maximization:
+            max = sum([i.fitness for i in individuals])
 
-      while True:
-        current = 0
-        pick = random.uniform(0, max)
-        for individual in individuals:
-            current = current + individual.fitness
-            if current > pick:
-                return individual
+            while True:
+                current = 0
+                pick = random.uniform(0, max)
+                for individual in individuals:
+                    current = current + individual.fitness
+                    if current > pick:
+                        return individual
+        else:
+            max = sum([1 / i.fitness for i in individuals])
+            while True:
+                current = 0
+                pick = random.uniform(0, max)
+                for individual in individuals:
+                    current = current + (1 / individual.fitness)
+                    if current > pick:
+                        return individual
 
 
 
